@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrossel de Animes</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: white;
+            padding: 20px;
+        }
+        
+        .carrossel-container {
+            max-width: 1000px;
+            position: relative;
+            margin: 30px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .carrossel-slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .carrossel-slide {
+            min-width: 100%;
+            position: relative;
+        }
+        
+        .carrossel-slide img {
+            width: 100%;
+            display: block;
+            height: 500px;
+            object-fit: cover;
+        }
+        
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .slide-caption h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        
+        .slide-caption p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .carrossel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .carrossel-btn:hover {
+            background-color: rgba(255, 0, 100, 0.8);
+        }
+        
+        #btn-prev {
+            left: 20px;
+        }
+        
+        #btn-next {
+            right: 20px;
+        }
+        
+        .carrossel-indicadores {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .indicador {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicador.ativo {
+            background-color: #ff0064;
+            transform: scale(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            .carrossel-slide img {
+                height: 350px;
+            }
+            
+            .slide-caption h3 {
+                font-size: 1.4rem;
+            }
+            
+            .carrossel-btn {
+                padding: 10px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center; margin-bottom: 20px;">Destaques da Temporada</h2>
+    
+    <div class="carrossel-container">
+        <div class="carrossel-slides">
+            <!-- Slide 1 -->
+            <div class="carrossel-slide">
+                <img src="https://i.imgur.com/JQK1jXW.jpg" alt="Attack on Titan">
+                <div class="slide-caption">
+                    <h3>Attack on Titan: Final Season</h3>
+                    <p>A emocionante conclusão da épica batalha pela liberdade da humanidade</p>
+                </div>
+            </div>
+            
+            <!-- Slide 2 -->
+            <div class="carrossel-slide">
+                <img src="https://i.imgur.com/X3ZQXWq.jpg" alt="Demon Slayer">
+                <div class="slide-caption">
+                    <h3>Demon Slayer: Kimetsu no Yaiba</h3>
+                    <p>A jornada de Tanjiro continua com novas técnicas e inimigos poderosos</p>
+                </div>
+            </div>
+            
+            <!-- Slide 3 -->
+            <div class="carrossel-slide">
+                <img src="https://i.imgur.com/Y9FqQXW.jpg" alt="Jujutsu Kaisen">
+                <div class="slide-caption">
+                    <h3>Jujutsu Kaisen 2ª Temporada</h3>
+                    <p>O retorno do anime que revolucionou o gênero de ação sobrenatural</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botões de navegação -->
+        <button class="carrossel-btn" id="btn-prev">&#10094;</button>
+        <button class="carrossel-btn" id="btn-next">&#10095;</button>
+        
+        <!-- Indicadores -->
+        <div class="carrossel-indicadores">
+            <div class="indicador ativo"></div>
+            <div class="indicador"></div>
+            <div class="indicador"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelector('.carrossel-slides');
+            const slideItems = document.querySelectorAll('.carrossel-slide');
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const indicadores = document.querySelectorAll('.indicador');
+            
+            let currentIndex = 0;
+            const totalSlides = slideItems.length;
+            let slideInterval;
+            
+            // Inicia o carrossel automático
+            function startCarrossel() {
+                slideInterval = setInterval(() => {
+                    goToSlide((currentIndex + 1) % totalSlides);
+                }, 5000);
+            }
+            
+            // Para o carrossel automático
+            function stopCarrossel() {
+                clearInterval(slideInterval);
+            }
+            
+            // Vai para um slide específico
+            function goToSlide(index) {
+                currentIndex = index;
+                slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+                
+                // Atualiza indicadores
+                indicadores.forEach((ind, i) => {
+                    ind.classList.toggle('ativo', i ===
