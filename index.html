@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AnimeLife - Review de Animes</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/616/616408.png" />
+  <style>
+    /* Mesma estilização do código anterior */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      background-color: #e0f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #004d40;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    header {
+      background-color: #00bcd4;
+      padding: 20px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+    nav button {
+      background-color: #008ba3;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1.1rem;
+      color: white;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-weight: 600;
+    }
+    nav button:hover, nav button:focus {
+      background-color: #005f66;
+      outline: none;
+    }
+    main {
+      flex-grow: 1;
+      padding: 30px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .anime-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: center;
+    }
+    .anime-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      width: 220px;
+      padding: 15px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .anime-card img {
+      max-width: 150px;
+      max-height: 120px;
+      object-fit: contain;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 2px solid #00bcd4;
+      background: #b2ebf2;
+    }
+    .anime-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: #007c91;
+    }
+    .opiniao-btn {
+      margin-top: auto;
+      background-color: #00acc1;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 25px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .opiniao-btn:hover {
+      background-color: #007c91;
+    }
+    .star-rating {
+      font-size: 1.5rem;
+      color: #ccc;
+      margin-bottom: 15px;
+      user-select: none;
+    }
+    .star {
+      cursor: pointer;
+      transition: color 0.3s ease;
+      display: inline-block;
+      margin: 0 3px;
+    }
+    .star.filled {
+      color: #00bcd4;
+    }
+    .opiniao-box {
+      background: #ffffffcc;
+      border-radius: 15px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+      padding: 25px;
+      max-width: 600px;
+      margin: 40px auto 0 auto;
+      text-align: center;
+    }
+    .opiniao-box h2 {
+      margin-bottom: 15px;
+      color: #007c91;
+    }
+    .opiniao-box textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 2px solid #00bcd4;
+      padding: 10px;
+      font-size: 1rem;
+      resize: vertical;
+      margin-bottom: 20px;
+      font-family: inherit;
+    }
+    .opiniao-box button {
+      background-color: #00acc1;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 25px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 0 10px;
+      transition: background-color 0.3s ease;
+    }
+    .opiniao-box button:hover {
+      background-color: #007c91;
+    }
+    @media (max-width: 768px) {
+      .anime-card {
+        width: 45%;
+      }
+    }
+    @media (max-width: 480px) {
+      .anime-card {
+        width: 100%;
+      }
+      nav {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AnimeLife</h1>
+    <nav>
+      <button id="btn-home">Home</button>
+      <button id="btn-principais">Principais buscas</button>
+      <button id="btn-procurar">Sobre</button>
+    </nav>
+  </header>
+  <main>
+    <section id="todos-container" class="anime-grid"></section>
+    <section id="principais-container" class="anime-grid" style="display:none;"></section>
+    <section id="outros-container" class="anime-grid" style="display:none;"></section>
+
+    <section id="opiniao-section" class="opiniao-box" style="display:none;">
+      <h2>Escreva sua opinião</h2>
+      <textarea id="opiniao-text" rows="5" placeholder="Escreva sua opinião aqui..."></textarea>
+      <br />
+      <button id="btn-salvar-opiniao">Salvar</button>
+      <button id="btn-cancelar-opiniao">Cancelar</button>
+    </section>
+  </main>
+
+  <script>
+    const animesPrincipais = [
+      { id: 'naruto', nome: 'Naruto', imagem: 'https://1.bp.blogspot.com/-CmOcQ7r8LIc/Uci8IIdWCaI/AAAAAAAAA6c/05f2Quydvl0/s1600/08570249.jpg' },
+      { id: 'mha', nome: 'My Hero Academia', imagem: 'https://www.xtrafondos.com/wallpapers/vertical/my-hero-academia-personajes-poster-3390.jpg' },
+      { id: 'demon-slayer', nome: 'Demon Slayer', imagem: 'https://br.web.img2.acsta.net/pictures/20/08/03/10/14/5958342.jpg' }
+    ];
+
+    const outrosAnimes = [
+      { id: 'one-piece', nome: 'One Piece', imagem: 'https://es.web.img3.acsta.net/pictures/16/02/03/17/11/571106.jpg' },
+      { id: 'attack-on-titan', nome: 'Attack on Titan', imagem: 'https://static0.gamerantimages.com/wordpress/wp-content/uploads/2023/09/attack-on-titan.jpg' },
+      { id: 'bleach', nome: 'Bleach', imagem: 'https://assets-prd.ignimgs.com/2022/07/03/fwtfjwlveaa0ppg-1656833679602.jpg' },
+      { id: 'death-note', nome: 'Death Note', imagem: 'https://www.closeupshop.fr/media/oart_0/oart_d/oart_98692/1135312_G881140.JPG' },
+      { id: 'fullmetal-alchemist', nome: 'Fullmetal Alchemist', imagem: 'https://images6.fanpop.com/image/photos/32700000/Official-Artwork-full-metal-alchemist-32792842-1024-768.jpg' },
+      { id: 'dragon-ball', nome: 'Dragon Ball', imagem: 'https://d28hgpri8am2if.cloudfront.net/book_images/onix/cvr9781974739103/dragon-ball-super-vol-19-9781974739103_hr.jpg' },
+      { id: 'fairy-tail', nome: 'Fairy Tail', imagem: 'https://image.tmdb.org/t/p/original/zo3BM6NB19sLfZ5INYa0TO9Tu4G.jpg' },
+      { id: 'tokyo-ghoul', nome: 'Tokyo Ghoul', imagem: 'https://otakuusamagazine.com/wp-content/uploads/2024/07/TGE_KV_FIX_RGB_logo-scaled.jpg' },
+      { id: 'hunter-x-hunter', nome: 'Hunter x Hunter', imagem: 'https://static0.gamerantimages.com/wordpress/wp-content/uploads/sharedimages/2024/07/hunter-x-hunter-2011.jpg' }
+      
+    ];
+
+    const todosContainer = document.getElementById('todos-container');
+    const principaisContainer = document.getElementById('principais-container');
+    const outrosContainer = document.getElementById('outros-container');
+    const opiniaoSection = document.getElementById('opiniao-section');
+    const opiniaoText = document.getElementById('opiniao-text');
+    const btnSalvarOpiniao = document.getElementById('btn-salvar-opiniao');
+    const btnCancelarOpiniao = document.getElementById('btn-cancelar-opiniao');
+
+    const btnHome = document.getElementById('btn-home');
+    const btnPrincipais = document.getElementById('btn-principais');
+    const btnProcurar = document.getElementById('btn-procurar');
+    const btnSobre = document.getElementById('btn-sobre');
+
+    let opiniaoAtualAnimeId = null;
+
+    function criarStars(ratingContainer, animeId) {
+      ratingContainer.innerHTML = '';
+      for(let i = 1; i <= 5; i++) {
+        const star = document.createElement('span');
+        star.classList.add('star');
+        star.innerHTML = '★';
+        star.dataset.value = i;
+        star.addEventListener('click', () => {
+          const stars = ratingContainer.querySelectorAll('.star');
+          stars.forEach(s => s.classList.remove('filled'));
+          for(let j=0; j < i; j++) {
+            stars[j].classList.add('filled');
+          }
+          localStorage.setItem('nota_'+animeId, i);
+        });
+        ratingContainer.appendChild(star);
+      }
+      const notaSalva = localStorage.getItem('nota_'+animeId);
+      if(notaSalva) {
+        const stars = ratingContainer.querySelectorAll('.star');
+        for(let j=0; j < notaSalva; j++) {
+          stars[j].classList.add('filled');
+        }
+      }
+    }
+
+    function criarCard(anime) {
+      const card = document.createElement('div');
+      card.className = 'anime-card';
+
+      const img = document.createElement('img');
+      img.src = anime.imagem;
+      img.alt = anime.nome;
+
+      const titulo = document.createElement('h3');
+      titulo.textContent = anime.nome;
+
+      const ratingDiv = document.createElement('div');
+      ratingDiv.className = 'star-rating';
+      criarStars(ratingDiv, anime.id);
+
+      const btnOpiniao = document.createElement('button');
+      btnOpiniao.textContent = 'Escreva sua opinião';
+      btnOpiniao.className = 'opiniao-btn';
+
+      btnOpiniao.onclick = () => {
+        opiniaoAtualAnimeId = anime.id;
+        opiniaoSection.style.display = 'block';
+        opiniaoText.value = localStorage.getItem('opiniao_'+anime.id) || '';
+        window.scrollTo({top: opiniaoSection.offsetTop - 20, behavior: 'smooth'});
+      };
+
+      card.appendChild(img);
+      card.appendChild(titulo);
+      card.appendChild(ratingDiv);
+      card.appendChild(btnOpiniao);
+
+      return card;
+    }
+
+    function preencherContainers() {
+      todosContainer.innerHTML = '';
+      outrosAnimes.forEach(anime => {
+        const card = criarCard(anime);
+        todosContainer.appendChild(card);
+      });
+
+      principaisContainer.innerHTML = '';
+      animesPrincipais.forEach(anime => {
+        const card = criarCard(anime);
+        principaisContainer.appendChild(card);
+      });
+
+      outrosContainer.innerHTML = '';
+    }
+
+    function mostrarSecao(secao) {
+      todosContainer.style.display = 'none';
+      principaisContainer.style.display = 'none';
+      outrosContainer.style.display = 'none';
+      opiniaoSection.style.display = 'none';
+
+      switch(secao) {
+        case 'home': todosContainer.style.display = 'flex'; break;
+        case 'principais': principaisContainer.style.display = 'flex'; break;
+        case 'procurar': outrosContainer.style.display = 'flex'; break;
+      
+    }
+
+    btnHome.onclick = () => mostrarSecao('home');
+    btnPrincipais.onclick = () => mostrarSecao('principais');
+    btnProcurar.onclick = () => mostrarSecao('procurar');
+    btnSobre.onclick = () => mostrarSecao('sobre');
+
+    btnSalvarOpiniao.onclick = () => {
+      if(opiniaoAtualAnimeId) {
+        localStorage.setItem('opiniao_' + opiniaoAtualAnimeId, opiniaoText.value);
+        alert('Opinião salva com sucesso!');
+        opiniaoSection.style.display = 'none';
+        opiniaoText.value = '';
+        opiniaoAtualAnimeId = null;
+      }
+    };
+
+    btnCancelarOpiniao.onclick = () => {
+      opiniaoSection.style.display = 'none';
+      opiniaoText.value = '';
+      opiniaoAtualAnimeId = null;
+    };
+
+    preencherContainers();
+    mostrarSecao('home');
+  </script>
+</body>
+</html>
